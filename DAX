@@ -1,0 +1,192 @@
+📘 DAX Measures Documentation
+Zepto Sales & Inventory Analysis – Power BI
+📌 Overview
+
+This document explains all DAX measures used in the Zepto Sales & Inventory Dashboard.
+
+The measures are designed to support:
+
+Sales performance tracking
+
+Inventory monitoring
+
+Category & price analysis
+
+Time-based trend evaluation
+
+Business KPI reporting
+
+📂 Data Model Tables (Assumed)
+Table Name	Description
+Sales	Transaction-level sales data
+Date	Calendar table
+Product	Item & category details
+Inventory	Stock availability information
+🧮 Core Sales Measures
+🔹 Total Sales
+Total Sales =
+SUM ( Sales[Total Sales] )
+
+
+📌 Purpose:
+Calculates overall revenue generated.
+
+🔹 Total MRP
+Total MRP =
+SUM ( Sales[MRP in Rs] )
+
+
+📌 Used to compare actual selling price vs MRP.
+
+🔹 Average Price
+Average Price =
+AVERAGE ( Sales[DiscountedSellingPrice] )
+
+
+📌 Shows average selling price across all items.
+
+🔹 Total Quantity Sold
+Total Quantity =
+SUM ( Sales[Quantity] )
+
+📊 KPI Measures
+🔹 Total Items
+Total Items =
+DISTINCTCOUNT ( Sales[ItemNameID] )
+
+🔹 Total Categories
+Total Categories =
+DISTINCTCOUNT ( Sales[CategoryID] )
+
+🔹 Total Orders
+Total Orders =
+COUNTROWS ( Sales )
+
+📅 Time Intelligence Measures
+🔹 Monthly Sales
+Monthly Sales =
+CALCULATE (
+    [Total Sales],
+    VALUES ( 'Date'[Month Name] )
+)
+
+🔹 Yearly Sales
+Yearly Sales =
+CALCULATE (
+    [Total Sales],
+    VALUES ( 'Date'[Year] )
+)
+
+🔹 Sales by Day Name
+Day Wise Sales =
+CALCULATE (
+    [Total Sales],
+    VALUES ( 'Date'[Day Name] )
+)
+
+📦 Inventory Measures
+🔹 Healthy Stock Sales
+Healthy Stock Sales =
+CALCULATE (
+    [Total Sales],
+    Sales[Stock Status] = "HEALTHY"
+)
+
+🔹 Low Stock Sales
+Low Stock Sales =
+CALCULATE (
+    [Total Sales],
+    Sales[Stock Status] = "LOW STOCK"
+)
+
+🔹 Out of Stock Sales
+Out of Stock Sales =
+CALCULATE (
+    [Total Sales],
+    Sales[Stock Status] = "OUT OF STOCK"
+)
+
+🔹 Stock Contribution %
+Stock Contribution % =
+DIVIDE (
+    [Total Sales],
+    CALCULATE ( [Total Sales], ALL ( Sales[Stock Status] ) )
+)
+
+
+📌 Used in donut and percentage visuals.
+
+💰 Price Category Measures
+🔹 Budget Sales
+Budget Sales =
+CALCULATE (
+    [Total Sales],
+    Sales[Price_Category] = "Budget"
+)
+
+🔹 Mid-Range Sales
+Mid Range Sales =
+CALCULATE (
+    [Total Sales],
+    Sales[Price_Category] = "Mid-Range"
+)
+
+🔹 Premium Sales
+Premium Sales =
+CALCULATE (
+    [Total Sales],
+    Sales[Price_Category] = "Premium"
+)
+
+🔹 Price Category Count
+Price Category Count =
+COUNT ( Sales[Price_Category] )
+
+🏷 Category Analysis Measures
+🔹 Category Sales
+Category Sales =
+CALCULATE (
+    [Total Sales],
+    VALUES ( Sales[Category] )
+)
+
+🔹 Top Category Rank
+Category Rank =
+RANKX (
+    ALL ( Sales[Category] ),
+    [Total Sales],
+    ,
+    DESC
+)
+
+🔹 Top 10 Categories Filter
+Top 10 Category =
+IF ( [Category Rank] <= 10, 1, 0 )
+
+
+📌 Used as a visual-level filter.
+
+📈 Performance Metrics
+🔹 Sales % of Total
+Sales % of Total =
+DIVIDE (
+    [Total Sales],
+    CALCULATE ( [Total Sales], ALL ( Sales ) )
+)
+
+🔹 Average Sales per Item
+Avg Sales per Item =
+DIVIDE (
+    [Total Sales],
+    [Total Items]
+)
+
+📊 Dashboard Measures Mapping
+Dashboard Visual	Measures Used
+KPI Cards	Total Sales, Total Items, Categories, Avg Price
+Monthly Trend	Monthly Sales
+Day-wise Sales	Day Wise Sales
+Stock Donut	Healthy / Low / Out of Stock Sales
+Price Breakdown	Budget / Mid / Premium Sales
+Top Categories	Category Sales + Rank
+Tables	Total Sales, Quantity, MRP
